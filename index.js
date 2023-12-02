@@ -67,12 +67,12 @@ async function run() {
     };
 
     // user related api start here
-    app.get("/users",verifyToken, async (req, res) => {
+    app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
 
-    app.delete("/users/:id", async (req, res) => {
+    app.delete("/users/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await userCollection.deleteOne(query);
@@ -97,6 +97,8 @@ async function run() {
 
     app.patch(
       "/users/admin/:id",
+      verifyToken,
+      verifyAdmin,
       async (req, res) => {
         const id = req.params.id;
         const filter = { _id: new ObjectId(id) };
@@ -123,6 +125,29 @@ async function run() {
 
     app.get("/allCamps", async (req, res) => {
       const result = await allCampCollection.find().toArray();
+      res.send(result);
+    });
+
+    // specific details show in the database after get all data
+    app.get("/allCamps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const options = {
+        projection: {
+          _id: 1,
+          campName: 1,
+          image: 1,
+          campFees: 1,
+          scheduledDateTime: 1,
+          venueLocation: 1,
+          specializedServices: 1,
+          healthcareProfessionals: 1,
+          targetAudience: 1,
+        },
+      };
+
+      const result = await allCampCollection.findOne(query, options);
       res.send(result);
     });
 
