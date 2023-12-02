@@ -29,6 +29,11 @@ async function run() {
     const userCollection = client.db("medicoDb").collection("users");
 
     // user related api start here
+    app.get("/users",  async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = { email: user.email };
