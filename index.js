@@ -32,6 +32,9 @@ async function run() {
     const updateProfileCollection = client
       .db("medicoDb")
       .collection("updateProfile");
+    const availableCampCollection = client
+      .db("medicoDb")
+      .collection("availableCamp");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -81,6 +84,13 @@ async function run() {
       const updateProfile = req.body;
       console.log(updateProfile);
       const result = await updateProfileCollection.insertOne(updateProfile);
+      res.send(result);
+    });
+
+    // availableCamp related api start here
+    app.post("/addCamp",verifyToken,verifyAdmin, async (req, res) => {
+      const addItem = req.body;
+      const result = await availableCampCollection.insertOne(addItem);
       res.send(result);
     });
 
