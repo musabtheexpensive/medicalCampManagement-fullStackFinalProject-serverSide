@@ -29,6 +29,9 @@ async function run() {
     const allCampCollection = client.db("medicoDb").collection("allCamps");
     const userCollection = client.db("medicoDb").collection("users");
     const joinCampCollection = client.db("medicoDb").collection("joinCamp");
+    const updateProfileCollection = client
+      .db("medicoDb")
+      .collection("updateProfile");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -67,11 +70,17 @@ async function run() {
       next();
     };
 
-    // join camp related api start here
+    // join camp and update profile related api start here
     app.post("/joinCamp", async (req, res) => {
       const addCamp = req.body;
       console.log(addCamp);
       const result = await joinCampCollection.insertOne(addCamp);
+      res.send(result);
+    });
+    app.post("/updateProfile", async (req, res) => {
+      const updateProfile = req.body;
+      console.log(updateProfile);
+      const result = await updateProfileCollection.insertOne(updateProfile);
       res.send(result);
     });
 
