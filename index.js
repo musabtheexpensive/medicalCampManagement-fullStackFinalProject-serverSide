@@ -80,6 +80,7 @@ async function run() {
       const result = await joinCampCollection.insertOne(addCamp);
       res.send(result);
     });
+    
     app.post("/updateProfile", async (req, res) => {
       const updateProfile = req.body;
       console.log(updateProfile);
