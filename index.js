@@ -80,7 +80,7 @@ async function run() {
       const result = await joinCampCollection.insertOne(addCamp);
       res.send(result);
     });
-    
+
     app.post("/updateProfile", async (req, res) => {
       const updateProfile = req.body;
       console.log(updateProfile);
@@ -94,7 +94,6 @@ async function run() {
       const result = await availableCampCollection.insertOne(addItem);
       res.send(result);
     });
-
     // user related api start here
     app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray();
