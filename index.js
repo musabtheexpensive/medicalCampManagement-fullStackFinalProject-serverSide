@@ -6,8 +6,23 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://medicalcamp-manage-fullproject.web.app"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE,PATCH");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
+
 // middleware
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uak4fm8.mongodb.net/?retryWrites=true&w=majority`;
@@ -158,6 +173,12 @@ async function run() {
       const category = req.query.category;
       const sortField = req.query.sortField;
       const sortOrder = req.query.sortOrder;
+
+      // pagination code here
+      const page = Number(req.query.page);
+      const limit = Number(req.query.limit);
+      const skip = (page - 1) * limit;
+
       if (category) {
         queryObj.category = category;
       }
@@ -165,10 +186,18 @@ async function run() {
       if (sortField && sortOrder) {
         sortObj[sortField] = sortOrder;
       }
-      const cursor = allCampCollection.find(queryObj).sort(sortObj);
+      const cursor = allCampCollection
+        .find(queryObj)
+        .skip(skip)
+        .limit(limit)
+        .sort(sortObj);
       const result = await cursor.toArray();
+
+      // sudhu pagination er jonno ey nicher line ta kora orthath front end kke bujhaite hobe j amar ey koita data ace ... tumi sey onujayi page vaag kore amak daw
+      const total = await allCampCollection.countDocuments();
+      
       // const result = await allCampCollection.find().toArray();
-      res.send( result );
+      res.send({ total, result });
     });
 
     // specific details show in the database after get all data
