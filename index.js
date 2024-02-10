@@ -89,7 +89,7 @@ async function run() {
     });
 
     // availableCamp related api start here
-    app.post("/addCamp",verifyToken,verifyAdmin, async (req, res) => {
+    app.post("/addCamp", verifyToken, verifyAdmin, async (req, res) => {
       const addItem = req.body;
       const result = await availableCampCollection.insertOne(addItem);
       res.send(result);
@@ -152,8 +152,23 @@ async function run() {
     });
 
     app.get("/allCamps", async (req, res) => {
-      const result = await allCampCollection.find().toArray();
-      res.send(result);
+      let queryObj = {};
+      let sortObj = {};
+
+      const category = req.query.category;
+      const sortField = req.query.sortField;
+      const sortOrder = req.query.sortOrder;
+      if (category) {
+        queryObj.category = category;
+      }
+
+      if (sortField && sortOrder) {
+        sortObj[sortField] = sortOrder;
+      }
+      const cursor = allCampCollection.find(queryObj).sort(sortObj);
+      const result = await cursor.toArray();
+      // const result = await allCampCollection.find().toArray();
+      res.send( result );
     });
 
     // specific details show in the database after get all data
